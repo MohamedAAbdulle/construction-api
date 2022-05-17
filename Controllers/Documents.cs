@@ -109,5 +109,31 @@ namespace ConstructionApi.Controllers
             else { return false; }
         }
 
+        [HttpPost("/pp")]
+        public async Task<IActionResult> StorenS3File(IFormFile file, [FromHeader] int customerId)
+        {
+            PutObjectRequest request = new PutObjectRequest();
+            request.BucketName = "construction001";
+            request.InputStream = file.OpenReadStream();
+            request.Key = customerId + "/orders/" + file.FileName;
+            request.ContentType = file.ContentType;
+            try { 
+            var response = await _s3Client.PutObjectAsync(request);
+
+            return Ok(response);
+            }
+            catch (Exception ex)
+             {
+                if (ex != null)
+                {
+                    return Ok(ex.Message);
+                }
+                else { 
+                    return Ok("Something wrong"); 
+                }
+            }
+
+        }
+
     }
 }

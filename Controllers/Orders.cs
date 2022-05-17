@@ -25,7 +25,7 @@ namespace ConstructionApi.Controllers
             _s3Client = s3Client;
 
         }
-        [HttpGet("/Alldocuments")]
+        [HttpGet("/all-documents")]
         public IActionResult GetAllDocs()
         {
             var docs = _context.Document.ToList();
