@@ -42,7 +42,7 @@ namespace ConstructionApi.Controllers
             return Ok("Tool Created Successfully");
         }
 
-        [HttpPut]
+        [HttpPut] //change, include id here
         public IActionResult Put([FromBody] ToolDb tool)
         {
             var foundTool = _context.Tool.FirstOrDefault(i => i.Id == tool.Id);

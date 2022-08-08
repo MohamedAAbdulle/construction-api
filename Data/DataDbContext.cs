@@ -22,6 +22,9 @@ namespace ConstructionApi.Data
         public DbSet<ToolDb> Tool { get; set; }
         public DbSet<InUseToolDb> InUseTool { get; set; }
         public DbSet<DocumentDb> Document { get; set; }
+        public DbSet<ContractorDb> Contractor { get; set; }
+        public DbSet<SubContractDb> SubContract { get; set; }
+        public DbSet<ContractItemDb> ContractItem { get; set; }
 
 
 

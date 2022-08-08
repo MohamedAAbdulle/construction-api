@@ -69,11 +69,13 @@ namespace ConstructionApi.Controllers
                 return NotFound();
             }
 
+            var currentTime = DateTime.Now;
+
             foundInv.Name = inv.Name;
             foundInv.Unit = inv.Unit;
             foundInv.Quantity = inv.Quantity;
             foundInv.Threshold = inv.Threshold;
-            foundInv.ModifiedDate = inv.ModifiedDate;
+            foundInv.ModifiedDate = currentTime;
 
             _context.SaveChanges();
             return Ok("Inventory Updated Successfully");

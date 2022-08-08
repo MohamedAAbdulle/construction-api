@@ -3,14 +3,16 @@ using System;
 using ConstructionApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ConstructionApi.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    partial class DataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220725003858_subcontract-table-change-totalPrice-type")]
+    partial class subcontracttablechangetotalPricetype
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,15 +69,16 @@ namespace ConstructionApi.Migrations
                         .IsRequired()
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("SubContractId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ContractItem");
+                    b.ToTable("ContractItemDb");
                 });
 
             modelBuilder.Entity("ConstructionApi.Data.ContractorDb", b =>
@@ -95,13 +98,12 @@ namespace ConstructionApi.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<long?>("Phone")
-                        .IsRequired()
+                    b.Property<long>("Phone")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contractor");
+                    b.ToTable("ContractorDb");
                 });
 
             modelBuilder.Entity("ConstructionApi.Data.DocumentDb", b =>
@@ -285,7 +287,7 @@ namespace ConstructionApi.Migrations
                     b.ToTable("SupplierInventories");
                 });
 
-            modelBuilder.Entity("ConstructionApi.Data.SubContractDb", b =>
+            modelBuilder.Entity("ConstructionApi.Data.SubContractsDb", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -297,15 +299,13 @@ namespace ConstructionApi.Migrations
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int?>("TotalPrice")
                         .IsRequired()
@@ -313,7 +313,7 @@ namespace ConstructionApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SubContract");
+                    b.ToTable("SubContractsDb");
                 });
 
             modelBuilder.Entity("ConstructionApi.Data.SupplierDb", b =>

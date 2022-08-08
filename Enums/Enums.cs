@@ -32,7 +32,16 @@ namespace ConstructionApi.Enums
         Settled ,
     };
 
-    public enum QuoteStatus
+    public enum ContractStatus
+    {
+        Ready = 1,
+        Inprogress,
+        Completed,
+        Invoiced,
+        Settled,
+    };
+
+    public enum EditedAction
     {
         Created = 1,
         Modified,

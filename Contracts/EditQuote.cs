@@ -12,7 +12,7 @@ namespace ConstructionApi.Contracts
         [Key]
         public int Id { get; set; }
         [Required]
-        public QuoteStatus Status { get; set; }
+        public EditedAction Status { get; set; }
         [Required]
         public int SupplierId { get; set; }
         [Required]

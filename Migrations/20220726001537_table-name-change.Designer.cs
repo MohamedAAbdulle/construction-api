@@ -3,14 +3,16 @@ using System;
 using ConstructionApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ConstructionApi.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    partial class DataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220726001537_table-name-change")]
+    partial class tablenamechange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,8 +69,9 @@ namespace ConstructionApi.Migrations
                         .IsRequired()
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("SubContractId")
                         .HasColumnType("int");
@@ -95,8 +98,7 @@ namespace ConstructionApi.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<long?>("Phone")
-                        .IsRequired()
+                    b.Property<long>("Phone")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -285,7 +287,7 @@ namespace ConstructionApi.Migrations
                     b.ToTable("SupplierInventories");
                 });
 
-            modelBuilder.Entity("ConstructionApi.Data.SubContractDb", b =>
+            modelBuilder.Entity("ConstructionApi.Data.SubContractsDb", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -297,15 +299,13 @@ namespace ConstructionApi.Migrations
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int?>("TotalPrice")
                         .IsRequired()

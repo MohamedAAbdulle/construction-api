@@ -132,7 +132,7 @@ namespace ConstructionApi.Controllers
             {
 
 
-                if (d.Status == QuoteStatus.Created)
+                if (d.Status == EditedAction.Created)
                 {
                     var ff=files.Find(f => f.FileName == d.FileName);
                     if (ff != null)
@@ -156,7 +156,7 @@ namespace ConstructionApi.Controllers
                     else {  BadRequest("file name mismatch"); }  
                 }
 
-                if (d.Status == QuoteStatus.Deleted)
+                if (d.Status == EditedAction.Deleted)
                 {
                     //differeciate the s3 errors of notfound and found but couldn't deleted
                     var bucket = "construction001";

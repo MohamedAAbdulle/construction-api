@@ -88,7 +88,7 @@ namespace ConstructionApi.Controllers
 
             quotesFromBody.ForEach(q =>
             {
-                if (q.Status == QuoteStatus.Created) {
+                if (q.Status == EditedAction.Created) {
                     _context.SupplierInventories.Add(new QuoteDb() {
                         InventoryId = q.InventoryId,
                         SupplierId = id,
@@ -101,11 +101,11 @@ namespace ConstructionApi.Controllers
                     var foundQuote = quotesFromDb.FirstOrDefault(qt => qt.Id == q.Id);
                     if (foundQuote!=null)
                     {
-                        if (q.Status == QuoteStatus.Deleted)
+                        if (q.Status == EditedAction.Deleted)
                         {
                             _context.SupplierInventories.Remove(foundQuote);
                         }
-                        else if (q.Status == QuoteStatus.Modified)
+                        else if (q.Status == EditedAction.Modified)
                         {
                             foundQuote.InventoryId = q.InventoryId;
                             foundQuote.SupplierId = id;
