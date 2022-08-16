@@ -42,8 +42,9 @@ namespace ConstructionApi.Controllers
                 CustomerId = customerId,
                 LastModified = currentTime,
 
-        });
+            });
 
+            
             _context.SaveChanges();
             return Ok("Sub-contractor Created Successfully");
         }

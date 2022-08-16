@@ -25,18 +25,19 @@ namespace ConstructionApi.Data
         public DbSet<ContractorDb> Contractor { get; set; }
         public DbSet<SubContractDb> SubContract { get; set; }
         public DbSet<ContractItemDb> ContractItem { get; set; }
-
-
+        public DbSet<MiscDb> Misc { get; set; }
+        public DbSet<SiteCashDb> SiteCash { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<InUseToolDb>()
                 .HasKey(nameof(InUseToolDb.ToolId), nameof(InUseToolDb.WorkerId));
+        
+            modelBuilder.Entity<SiteCashDb>()
+                .HasKey(nameof(SiteCashDb.CustomerId));
         }
 
 
-
-
-    }
+}
 }

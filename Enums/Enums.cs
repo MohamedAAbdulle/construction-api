@@ -52,4 +52,14 @@ namespace ConstructionApi.Enums
         WorkerType=1,
     }
 
+    public enum MiscType
+    {
+        Buy = 1,
+        Fine,
+        Salary,
+        Correction,
+        Others,
+        Deposit
+    }
+
 }

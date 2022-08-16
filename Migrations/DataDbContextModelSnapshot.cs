@@ -216,6 +216,40 @@ namespace ConstructionApi.Migrations
                     b.ToTable("InventoryHistory");
                 });
 
+            modelBuilder.Entity("ConstructionApi.Data.MiscDb", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .IsRequired()
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("MiscType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Price")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Misc");
+                });
+
             modelBuilder.Entity("ConstructionApi.Data.OrderDb", b =>
                 {
                     b.Property<int>("Id")
@@ -283,6 +317,25 @@ namespace ConstructionApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SupplierInventories");
+                });
+
+            modelBuilder.Entity("ConstructionApi.Data.SiteCashDb", b =>
+                {
+                    b.Property<int?>("CustomerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Amount")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModified")
+                        .IsRequired()
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("CustomerId");
+
+                    b.ToTable("SiteCash");
                 });
 
             modelBuilder.Entity("ConstructionApi.Data.SubContractDb", b =>
