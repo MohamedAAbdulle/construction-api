@@ -21,5 +21,7 @@ namespace ConstructionApi.Data
         [Required]
         public DateTime? DateDone { get; set; }
         public int? CustomerId { get; set; }
+        public int? UserId { get; set; }
+
     }
 }

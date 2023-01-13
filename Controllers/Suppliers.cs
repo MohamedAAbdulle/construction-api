@@ -66,7 +66,7 @@ namespace ConstructionApi.Controllers
 
 
         [HttpPut("{id}")]
-        public IActionResult Put([FromBody] EditSupplierAndQuotes supplierObj, int id)
+        public IActionResult Put([FromHeader] int customerId,[FromBody] EditSupplierAndQuotes supplierObj, int id)
         {
             var foundSupplier = _context.Supplier.FirstOrDefault(i => i.Id == id);
 
@@ -93,7 +93,8 @@ namespace ConstructionApi.Controllers
                         InventoryId = q.InventoryId,
                         SupplierId = id,
                         Amount = q.Amount,
-                        Price = q.Price
+                        Price = q.Price,
+                        CustomerId= customerId
                     });
                 }
 

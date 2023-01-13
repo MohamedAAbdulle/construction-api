@@ -21,7 +21,7 @@ namespace ConstructionApi.Data
         public string Unit { get; set; }
         [Required]
 
-        public DateTime ModifiedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
         public int? CustomerId { get; set; }
     }
 }

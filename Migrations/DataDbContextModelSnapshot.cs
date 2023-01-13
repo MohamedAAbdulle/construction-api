@@ -137,19 +137,23 @@ namespace ConstructionApi.Migrations
 
             modelBuilder.Entity("ConstructionApi.Data.InUseToolDb", b =>
                 {
-                    b.Property<int>("ToolId")
+                    b.Property<int?>("ToolId")
                         .HasColumnType("int");
 
-                    b.Property<int>("WorkerId")
+                    b.Property<int?>("WorkerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateAssigned")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("Amount")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DateAssigned")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("ToolId", "WorkerId");
+                    b.HasKey("ToolId", "WorkerId", "DateAssigned");
 
                     b.ToTable("InUseTool");
                 });
@@ -163,7 +167,8 @@ namespace ConstructionApi.Migrations
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
+                        .IsRequired()
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
@@ -209,6 +214,9 @@ namespace ConstructionApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -411,6 +419,10 @@ namespace ConstructionApi.Migrations
 
                     b.Property<int>("InUse")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModified")
+                        .IsRequired()
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -32,7 +32,7 @@ namespace ConstructionApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<InUseToolDb>()
-                .HasKey(nameof(InUseToolDb.ToolId), nameof(InUseToolDb.WorkerId));
+                .HasKey(nameof(InUseToolDb.ToolId), nameof(InUseToolDb.WorkerId), nameof(InUseToolDb.DateAssigned));
         
             modelBuilder.Entity<SiteCashDb>()
                 .HasKey(nameof(SiteCashDb.CustomerId));

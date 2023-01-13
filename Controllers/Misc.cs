@@ -14,7 +14,7 @@ namespace ConstructionApi.Contracts
     {
         private readonly DataDbContext _context;
 
-        public DateTime CurrentTime = DateTime.Now;
+        public DateTime CurrentTime = DateTime.UtcNow;
 
         public Misc(DataDbContext context)
         {
@@ -49,7 +49,7 @@ namespace ConstructionApi.Contracts
             }
             if (siteCash < 0)
             {
-                return BadRequest();
+                return BadRequest(new ErrorResponse(){Title="No Enough Cash At Site"});
             }
 
             _context.SaveChanges();

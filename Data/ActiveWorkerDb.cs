@@ -19,5 +19,6 @@ namespace ConstructionApi.Data
         public string Chart { get; set; }
         public int? CustomerId { get; set; }
 
+
     }
 }

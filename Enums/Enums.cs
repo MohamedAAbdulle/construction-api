@@ -20,16 +20,18 @@ namespace ConstructionApi.Enums
     };
 
     public enum InvHistType { 
-        Removed =1,
-        Added,
+        DailyUsage =1,
+        Delivery,
+        CorrectionRemove,
+        CorrectionAdd,
+        UndoDelivery
     };
     public enum OrderStatus
     {
         //inventory quantity update is dependent on this order
-        Pending = 1,
+        Ordered = 1,
         Delivered ,
-        Invoiced ,
-        Settled ,
+        Paid ,
     };
 
     public enum ContractStatus

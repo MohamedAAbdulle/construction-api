@@ -74,6 +74,8 @@ namespace ConstructionApi.Controllers
             return Ok(response.ResponseStream);*/
             var name = $"{customerId}/orders/{fileName}";
             var file = await GetFile(name);
+            
+
             return file;
         }
 
@@ -93,11 +95,12 @@ namespace ConstructionApi.Controllers
                 return null;
             }
             string mimeType = objectResponse.Headers.ContentType;
-
+            
             var formFile = new FileStreamResult(objectResponse.ResponseStream, mimeType)
             {
-                FileDownloadName = "hel"
+                
             };
+            HttpContext.Response.Headers.Add("content-disposition", "inline; filename=helow.pdf");
 
             return formFile;
 

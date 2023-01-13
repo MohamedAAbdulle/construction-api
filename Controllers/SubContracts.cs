@@ -15,10 +15,12 @@ namespace ConstructionApi.Controllers
     public class SubContracts : ControllerBase
     {
         private readonly DataDbContext _context;
-        
+        private readonly DateTime currentTime;
+
         public SubContracts(DataDbContext context)
         {
             _context = context;
+            currentTime = DateTime.UtcNow;
         }
 
         [HttpGet]
@@ -31,7 +33,6 @@ namespace ConstructionApi.Controllers
         [HttpPost]
         public IActionResult PostSubContracts([FromHeader] int customerId,[FromBody] SubContractDb subContract)
         {
-            var currentTime = DateTime.Now;
             _context.SubContract.Add(new SubContractDb()
             {
                 Id = 0,
@@ -67,10 +68,12 @@ namespace ConstructionApi.Controllers
             {
                 return NotFound();
             }
+
             var aa = _context.ContractItem.Where(i => i.SubContractId == id && i.CustomerId == customerId).ToList();
             aa.ForEach(q => {
                 _context.Remove(q);
             });
+
             _context.Remove(foundSubCont);
             _context.SaveChanges();
             return Ok("SubContract and Associated Contract Items Deleted!");
@@ -138,7 +141,6 @@ namespace ConstructionApi.Controllers
                     }
                 }
             });
-            var currentTime = DateTime.Now;
 
             foundSubCont.Name = subContract.Name;
             foundSubCont.Status = subContract.Status;

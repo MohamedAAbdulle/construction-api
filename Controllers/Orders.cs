@@ -19,13 +19,17 @@ namespace ConstructionApi.Controllers
         private readonly DataDbContext _context;
         private readonly IAmazonS3 _s3Client;
 
+        private readonly DateTime currentTime;
+
         public Orders(DataDbContext context, IAmazonS3 s3Client)
         {
             _context = context;
             _s3Client = s3Client;
+            currentTime = DateTime.UtcNow;
 
         }
-        [HttpGet("/all-documents")]
+        
+        [HttpGet("/all-documents")] //admin-level
         public IActionResult GetAllDocs()
         {
             var docs = _context.Document.ToList();
@@ -38,15 +42,16 @@ namespace ConstructionApi.Controllers
             var orders = _context.Order.Where(r => r.CustomerId == customerId).ToList();
             return Ok(orders);
         }
-        [HttpGet("{ownerId}")]
-        public IActionResult GetOrderById([FromHeader] int customerId,int ownerId)
+
+        [HttpGet("{id}/docs")]
+        public IActionResult GetOrderById([FromHeader] int customerId,int id)
         {
-            var docs = _context.Document.Where(r => r.OwnerId== ownerId && r.FileCategory==DocumentCategory.Order&&r.CustomerId == customerId).ToList();
+            var docs = _context.Document.Where(r => r.OwnerId== id && r.FileCategory==DocumentCategory.Order&&r.CustomerId == customerId).ToList();
             return Ok(docs);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] OrderDb order, [FromHeader] int customerId)
+        public IActionResult Post([FromBody] OrderObj order, [FromHeader] int customerId)
         {
             _context.Order.Add(new OrderDb()
             {
@@ -55,41 +60,22 @@ namespace ConstructionApi.Controllers
                 Price=order.Price,
                 Quantity=order.Quantity,
                 Delivered=order.Delivered,
-                DateDone=order.DateDone,
-                Status=order.Status,
-                CustomerId = customerId
+                DateDone= currentTime,
+                Status= (OrderStatus)1 ,
+                CustomerId = customerId,
             });
 
-            if ((int)order.Status > 1) {
-                var inv=_context.Inventory.FirstOrDefault(i => i.Id == order.InventoryId);
-                if (inv!=null) {
-                    inv.Quantity += order.Quantity;
-                    _context.InventoryHistory.Add(new InventoryHistoryDb()
-                    {
-                        InvId = order.InventoryId,
-                        Quantity = order.Quantity,
-                        Type = (InvHistType)2,
-                        DateDone = order.DateDone
-                    });
-                }
-
-            }
-
-            Console.WriteLine((int) order.Status>1);
+            
 
             _context.SaveChanges();
             return Ok("Order Created Successfully");
         }
 
 
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromForm] List<IFormFile> files, [FromForm] string orderString, [FromHeader] int customerId, int id)
+        public IActionResult Put([FromBody] OrderObj order, int id)
         {
-            OrderObj order = JsonConvert.DeserializeObject<OrderObj>(orderString);
-
-            //var rr = new Documents(_s3Client);
-
-            //var a = await rr.Bb(file, obj.FileName);
 
             var foundOrder = _context.Order.FirstOrDefault(i => i.Id == id);
 
@@ -98,46 +84,125 @@ namespace ConstructionApi.Controllers
                 return NotFound();
             }
 
-            if ((int)order.Status > 1 && (int) foundOrder.Status==1)
-            {
-                var inv = _context.Inventory.FirstOrDefault(i => i.Id == order.InventoryId);
-                if (inv != null)
-                {
-                    inv.Quantity += order.Quantity;
-                    _context.InventoryHistory.Add(new InventoryHistoryDb()
-                    {
-                        InvId = order.InventoryId,
-                        Quantity = order.Quantity,
-                        Type = (InvHistType)2,
-                        DateDone = order.DateDone
-                    });
-
-                }
-            }
-
             foundOrder.InventoryId = order.InventoryId;
             foundOrder.SupplierId = order.SupplierId;
             foundOrder.Price = order.Price;
             foundOrder.Quantity = order.Quantity;
             foundOrder.Delivered = order.Delivered;
-            foundOrder.DateDone = order.DateDone;
-            foundOrder.Status = order.Status;
+            foundOrder.DateDone = currentTime;
+
+            _context.SaveChanges();
+            return Ok("Order Updated Successfully");
+        }
 
 
-
-             var rr = new Documents(_s3Client);
-
+        [HttpPut("statusUpdate/{id}")]
+        public IActionResult UpdateStatus(int id, [FromHeader] int customerId, int userId)
+        {
             
-            foreach(var d in order.Documents)
-            {
 
+            var foundOrder = _context.Order.FirstOrDefault(i => i.Id == id);
+
+            if (foundOrder == null)
+            {
+                return NotFound();
+            }
+
+            var prevStatus =(int)foundOrder.Status;
+
+            if (prevStatus >= 3) {
+                return BadRequest();
+            }
+            if (prevStatus == 1) {
+                var inv = _context.Inventory.FirstOrDefault(i => i.Id == foundOrder.InventoryId);
+                if (inv == null)
+                {
+                    return NotFound();
+                }
+                inv.Quantity += foundOrder.Quantity;
+                _context.InventoryHistory.Add(new InventoryHistoryDb()
+                {
+                    InvId = foundOrder.InventoryId,
+                    Quantity = foundOrder.Quantity,
+                    Type = (InvHistType)2,
+                    DateDone = currentTime,
+                    CustomerId= customerId,
+                    UserId= userId
+                });
+            }
+
+            foundOrder.Status = (OrderStatus)prevStatus + 1;
+            foundOrder.DateDone = currentTime;
+
+            _context.SaveChanges();
+            return Ok();
+        }
+
+
+        [HttpPut("undoStatus/{id}")]
+        public IActionResult UndoStatus(int id, [FromHeader] int customerId, int userId)
+        {
+
+            var foundOrder = _context.Order.FirstOrDefault(i => i.Id == id);
+
+            if (foundOrder == null)
+            {
+                return NotFound();
+            }
+
+            var prevStatus = (int)foundOrder.Status;
+
+            if (prevStatus <= 1)
+            {
+                return BadRequest();
+            }
+            if (prevStatus == 2)
+            {
+                var inv = _context.Inventory.FirstOrDefault(i => i.Id == foundOrder.InventoryId);
+                if (inv == null)
+                {
+                    return NotFound();
+                }
+                inv.Quantity -= foundOrder.Quantity;
+                _context.InventoryHistory.Add(new InventoryHistoryDb()
+                {
+                    InvId = foundOrder.InventoryId,
+                    Quantity = foundOrder.Quantity,
+                    Type = (InvHistType)5,
+                    DateDone = currentTime,
+                    CustomerId= customerId,
+                    UserId=userId
+                   
+                });
+            }
+
+            foundOrder.Status = (OrderStatus)prevStatus - 1;
+            foundOrder.DateDone = currentTime;
+
+            _context.SaveChanges();
+            return Ok();
+        }
+
+
+
+        [HttpPut("docs/{id}")]
+        public async Task<IActionResult> UpdateDocs([FromForm] List<IFormFile> files, [FromForm] string docsJson, [FromHeader] int customerId, int id)
+        {
+            var docObjs = JsonConvert.DeserializeObject<List<DocumentObj>>(docsJson);
+
+            //var bb= List < DocumentObj >
+
+            var rr = new Documents(_s3Client); 
+            
+            foreach (var d in docObjs)
+            {
 
                 if (d.Status == EditedAction.Created)
                 {
-                    var ff=files.Find(f => f.FileName == d.FileName);
+                    var ff = files.Find(f => f.FileName == d.FileName);
                     if (ff != null)
                     {
-                        var a = await rr.CreateFile(ff,customerId);
+                        var a = await rr.CreateFile(ff, customerId);
                         if (a)
                         {
                             _context.Document.Add(new DocumentDb()
@@ -150,10 +215,10 @@ namespace ConstructionApi.Controllers
                                 CustomerId = customerId,
                             });
                         }
-                        else {  return BadRequest("Could not store file in s3"); }
+                        else { return BadRequest("Could not store file in s3"); }
 
                     }
-                    else {  BadRequest("file name mismatch"); }  
+                    else { BadRequest("file name mismatch"); }
                 }
 
                 if (d.Status == EditedAction.Deleted)
@@ -172,12 +237,13 @@ namespace ConstructionApi.Controllers
                         return BadRequest("Failed To delete from s3");
                     }
                 }
-            
-        };
+
+            };
 
             _context.SaveChanges();
             return Ok("Order Updated Successfully");
         }
+        
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id, [FromHeader] int customerId)
@@ -192,20 +258,6 @@ namespace ConstructionApi.Controllers
             _context.SaveChanges();
             return Ok("Order Deleted Successfully");
         }
-        [HttpDelete("/documents-delete/{id}")]
-        public async Task<IActionResult> DeleteDoc(int id, [FromHeader] int customerId)
-        {
-            var foundOrder = _context.Document.FirstOrDefault(i => i.Id == id && i.CustomerId == customerId);
 
-            if (foundOrder == null)
-            {
-                return NotFound();
-            }
-            
-                _context.Document.Remove(foundOrder);
-                _context.SaveChanges();
-                return Ok("Order Deleted Successfully");
-            
-        }
     }
 }

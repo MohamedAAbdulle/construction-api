@@ -18,12 +18,5 @@ namespace ConstructionApi.Contracts
         [Required]
         public int? Quantity { get; set; }
         public int Delivered { get; set; }
-        [Required]
-        public OrderStatus? Status { get; set; }
-        [Required]
-        public DateTime? DateDone { get; set; }
-        [Required]
-        public List<DocumentObj> Documents { get; set; }
-        public int? CustomerId { get; set; }
     }
 }

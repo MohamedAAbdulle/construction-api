@@ -9,11 +9,13 @@ namespace ConstructionApi.Data
     public class InUseToolDb
     {
         [Required]
-        public int ToolId { get; set; }
+        public int? ToolId { get; set; }
         [Required]
-        public int WorkerId { get; set; }
+        public int? WorkerId { get; set; }
         [Required]
-        public DateTime DateAssigned { get; set; }
+        public int? Amount { get; set; }
+        [Required]
+        public DateTime? DateAssigned { get; set; }
         public int? CustomerId { get; set; }
     }
 }

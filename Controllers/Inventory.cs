@@ -17,10 +17,12 @@ namespace ConstructionApi.Controllers
     public class Inventory : ControllerBase
     {
         private readonly DataDbContext _context;
+        private readonly DateTime currentTime;
 
         public Inventory(DataDbContext context)
         {
             _context = context;
+            currentTime = DateTime.UtcNow;
 
         }
 
@@ -51,7 +53,7 @@ namespace ConstructionApi.Controllers
                 Unit= inv.Unit,
                 Quantity = inv.Quantity,
                 Threshold= inv.Threshold,
-                ModifiedDate= inv.ModifiedDate,
+                ModifiedDate= currentTime,
                 CustomerId = customerId
             });
 
@@ -69,7 +71,7 @@ namespace ConstructionApi.Controllers
                 return NotFound();
             }
 
-            var currentTime = DateTime.Now;
+            
 
             foundInv.Name = inv.Name;
             foundInv.Unit = inv.Unit;
@@ -82,72 +84,88 @@ namespace ConstructionApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int id, [FromHeader] int customerId)
         {
             var inv=_context.Inventory.FirstOrDefault(i => i.Id == id);
 
             if (inv==null) { 
                 return NotFound();
             }
+            var aa = _context.InventoryHistory.Where(i => i.InvId == id&&i.CustomerId== customerId).ToList();
+            aa.ForEach(q =>
+            {
+                _context.Remove(q);
+            });
             _context.Inventory.Remove(inv);
             _context.SaveChanges();
             return Ok("Inventory Deleted Successfully");
         }
 
-        [HttpPut("takeout/{id}")]
-        public IActionResult Takeout(int id,[FromBody] Takeout inv)
+        public class Validations
         {
-            var foundInv = _context.Inventory.FirstOrDefault(i => i.Id == id);
-
-            if (foundInv == null)
-            {
-                return NotFound();
-            }
-
-            var remaining = foundInv.Quantity - inv.Quantity;
-            if (remaining < 0) remaining = 0;
-
-            foundInv.Quantity = remaining;
-            foundInv.ModifiedDate = inv.ModifiedDate;
-
-            //record it to inventory history
-            _context.InventoryHistory.Add( new InventoryHistoryDb() { 
-                InvId= id,
-                Quantity=inv.Quantity,
-                Type= (InvHistType)1,
-                DateDone=inv.ModifiedDate
-            });;
-            _context.SaveChanges();
-            return Ok("Inventory Updated Successfully");
+            public string ErrorMessage { get; set; }
+            public string Key { get; set; }
         }
 
-        [HttpPut("addmore/{id}")]
-        public IActionResult AddMore(int id, [FromBody] AddMore inv)
+        public class OperationResult
         {
+            private List<string> _errors;
+
+            public List<Validations> Errors { get; set; }
+            public OperationResult()
+            {
+                Errors = new List<Validations>();
+            }
+
+            public object data { get; set; }
+        }
+
+        [HttpPut("quantity/{id}")]
+        public IActionResult UpdateQuantity(int id, [FromHeader] int customerId, int userId, [FromBody] InvQuantity inv)
+        {
+            var dd = new OperationResult();
+            
+
+            //dd.Error = "Quantity should not be greater than Amount";
             var foundInv = _context.Inventory.FirstOrDefault(i => i.Id == id);
 
             if (foundInv == null)
             {
                 return NotFound();
+    }
+
+
+            int typeInt = (int)inv.Type;
+
+            if (typeInt == 2 || typeInt == 4) { foundInv.Quantity += inv.Quantity; }
+
+            else if (typeInt == 1|| typeInt== 3){ 
+                var remaining= foundInv.Quantity - inv.Quantity;
+                if (remaining < 0) {
+                    var error = new Validations { ErrorMessage = "Hello world", Key = "Quantity" };
+                    //return new OperationResult { Errors = new List<Validations> { error} };
+                    dd.Errors.Add(error);
+                    return BadRequest(dd);
+                }
+                else { foundInv.Quantity = remaining; }
             }
 
-            var remaining = foundInv.Quantity + inv.Quantity;
-
-            foundInv.Quantity = remaining;
-            foundInv.ModifiedDate = inv.ModifiedDate;
+            foundInv.ModifiedDate = currentTime;
 
             //record it to inventory history
             _context.InventoryHistory.Add(new InventoryHistoryDb()
             {
                 InvId = id,
                 Quantity = inv.Quantity,
-                Type = (InvHistType) 2,
-                DateDone = inv.ModifiedDate
+                Type = inv.Type,
+                DateDone = currentTime,
+                CustomerId = customerId,
+                UserId= userId,
             });
-            _context.SaveChanges();
-            return Ok("Inventory Updated Successfully");
-        }
 
+            _context.SaveChanges();
+            return Ok("Inventory Quantity Updated Successfully");
+        }
 
         //Inventory History
         [HttpGet("invhistory/{id}")]
