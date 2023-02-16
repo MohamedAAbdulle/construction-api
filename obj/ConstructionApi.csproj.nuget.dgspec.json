@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\16124\\Desktop\\Dev\\projects\\construction\\Construction-api\\ConstructionApi\\ConstructionApi.csproj": {}
+    "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\ConstructionApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\16124\\Desktop\\Dev\\projects\\construction\\Construction-api\\ConstructionApi\\ConstructionApi.csproj": {
+    "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\ConstructionApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\16124\\Desktop\\Dev\\projects\\construction\\Construction-api\\ConstructionApi\\ConstructionApi.csproj",
+        "projectUniqueName": "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\ConstructionApi.csproj",
         "projectName": "ConstructionApi",
-        "projectPath": "C:\\Users\\16124\\Desktop\\Dev\\projects\\construction\\Construction-api\\ConstructionApi\\ConstructionApi.csproj",
-        "packagesPath": "C:\\Users\\16124\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\16124\\Desktop\\Dev\\projects\\construction\\Construction-api\\ConstructionApi\\obj\\",
+        "projectPath": "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\ConstructionApi.csproj",
+        "packagesPath": "C:\\Users\\yarae\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\16124\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\yarae\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -26,6 +26,7 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
             "projectReferences": {}
           }
         },
@@ -37,6 +38,7 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "dependencies": {
             "AWSSDK.Extensions.NETCore.Setup": {
               "target": "Package",
@@ -83,10 +85,17 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.NETCore.App.Host.linux-x64",
+              "version": "[3.1.32, 3.1.32]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -95,7 +104,12 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "linux-x64": {
+          "#import": []
         }
       }
     }
