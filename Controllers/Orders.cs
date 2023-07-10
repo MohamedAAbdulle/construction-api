@@ -185,64 +185,64 @@ namespace ConstructionApi.Controllers
 
 
 
-        [HttpPut("docs/{id}")]
-        public async Task<IActionResult> UpdateDocs([FromForm] List<IFormFile> files, [FromForm] string docsJson, [FromHeader] int customerId, int id)
-        {
-            var docObjs = JsonConvert.DeserializeObject<List<DocumentObj>>(docsJson);
+        //[HttpPut("docs/{id}")]
+        //public async Task<IActionResult> UpdateDocs([FromForm] List<IFormFile> files, [FromForm] string docsJson, [FromHeader] int customerId, int id)
+        //{
+        //    var docObjs = JsonConvert.DeserializeObject<List<DocumentObj>>(docsJson);
 
-            //var bb= List < DocumentObj >
+        //    //var bb= List < DocumentObj >
 
-            var rr = new Documents(_s3Client); 
+        //    var rr = new Documents(_s3Client, _context); 
             
-            foreach (var d in docObjs)
-            {
+        //    foreach (var d in docObjs)
+        //    {
 
-                if (d.Status == EditedAction.Created)
-                {
-                    var ff = files.Find(f => f.FileName == d.FileName);
-                    if (ff != null)
-                    {
-                        var a = await rr.CreateFile(ff, customerId);
-                        if (a)
-                        {
-                            _context.Document.Add(new DocumentDb()
-                            {
-                                FileName = d.FileName,
-                                FileType = d.FileType,
-                                DateCreated = d.DateCreated,
-                                OwnerId = id,
-                                FileCategory = DocumentCategory.Order,
-                                CustomerId = customerId,
-                            });
-                        }
-                        else { return BadRequest("Could not store file in s3"); }
+        //        if (d.Status == EditedAction.Created)
+        //        {
+        //            var ff = files.Find(f => f.FileName == d.FileName);
+        //            if (ff != null)
+        //            {
+        //                var a = await rr.CreateFile(ff, customerId);
+        //                if (a)
+        //                {
+        //                    _context.Document.Add(new DocumentDb()
+        //                    {
+        //                        FileName = d.FileName,
+        //                        FileType = d.FileType,
+        //                        DateCreated = d.DateCreated,
+        //                        OwnerId = id,
+        //                        FileCategory = DocumentCategory.Order,
+        //                        CustomerId = customerId,
+        //                    });
+        //                }
+        //                else { return BadRequest("Could not store file in s3"); }
 
-                    }
-                    else { BadRequest("file name mismatch"); }
-                }
+        //            }
+        //            else { BadRequest("file name mismatch"); }
+        //        }
 
-                if (d.Status == EditedAction.Deleted)
-                {
-                    //differeciate the s3 errors of notfound and found but couldn't deleted
-                    var bucket = "construction001";
-                    var key = $"{customerId}/orders/{d.FileName}";
-                    var res = await rr.DeleteFile(bucket, key);
-                    if (res)
-                    {
-                        var foundDoc = _context.Document.FirstOrDefault(i => i.Id == d.Id && i.CustomerId == customerId);
-                        _context.Document.Remove(foundDoc);
-                    }
-                    else
-                    {
-                        return BadRequest("Failed To delete from s3");
-                    }
-                }
+        //        if (d.Status == EditedAction.Deleted)
+        //        {
+        //            //differeciate the s3 errors of notfound and found but couldn't deleted
+        //            var bucket = "construction001";
+        //            var key = $"{customerId}/orders/{d.FileName}";
+        //            var res = await rr.DeleteFile(bucket, key);
+        //            if (res)
+        //            {
+        //                var foundDoc = _context.Document.FirstOrDefault(i => i.Id == d.Id && i.CustomerId == customerId);
+        //                _context.Document.Remove(foundDoc);
+        //            }
+        //            else
+        //            {
+        //                return BadRequest("Failed To delete from s3");
+        //            }
+        //        }
 
-            };
+        //    };
 
-            _context.SaveChanges();
-            return Ok("Order Updated Successfully");
-        }
+        //    _context.SaveChanges();
+        //    return Ok("Order Updated Successfully");
+        //}
         
 
         [HttpDelete("{id}")]

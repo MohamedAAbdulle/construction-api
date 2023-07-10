@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\ConstructionApi.csproj": {}
+    "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\ConstructionApi\\ConstructionApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\ConstructionApi.csproj": {
+    "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\ConstructionApi\\ConstructionApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\ConstructionApi.csproj",
+        "projectUniqueName": "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\ConstructionApi\\ConstructionApi.csproj",
         "projectName": "ConstructionApi",
-        "projectPath": "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\ConstructionApi.csproj",
+        "projectPath": "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\ConstructionApi\\ConstructionApi.csproj",
         "packagesPath": "C:\\Users\\yarae\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\construction-api\\obj\\",
+        "outputPath": "C:\\Users\\yarae\\OneDrive\\Desktop\\webDev\\construction\\ConstructionApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\yarae\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -90,12 +90,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[3.1.32, 3.1.32]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -105,11 +99,6 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
-        }
-      },
-      "runtimes": {
-        "linux-x64": {
-          "#import": []
         }
       }
     }

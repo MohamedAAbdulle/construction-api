@@ -33,19 +33,9 @@ namespace ConstructionApi
         {
             //services.AddDbContext<DataDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("dev") ));
 
-            services.AddDbContext<DataDbContext>(options =>
-            {
-                string connectionString = Configuration.GetConnectionString("Dev");
-                options.UseMySql(connectionString,
-                    ServerVersion.AutoDetect(Configuration.GetConnectionString("Dev")),
-                    mySqlOptions =>
-                        mySqlOptions.EnableRetryOnFailure(
-                            maxRetryCount: 10,
-                            maxRetryDelay: TimeSpan.FromSeconds(30),
-                            errorNumbersToAdd: null));
-            });
+            
 
-            //services.AddDbContext<DataDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("local")));
+            services.AddDbContext<DataDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("local")));
             services.AddSwaggerGen();
             services.AddControllers().AddJsonOptions(x => { x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
             services.AddAWSService<IAmazonS3>();

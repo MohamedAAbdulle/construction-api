@@ -9,8 +9,10 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using ConstructionApi.Contracts;
 using ConstructionApi.Data;
+using ConstructionApi.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace ConstructionApi.Controllers
@@ -20,45 +22,19 @@ namespace ConstructionApi.Controllers
     public class Documents : ControllerBase
     {
         private readonly IAmazonS3 _s3Client;
+        private readonly DataDbContext _context;
 
 
-        public Documents(IAmazonS3 s3Client) {
+
+        public Documents(IAmazonS3 s3Client, DataDbContext context) {
             _s3Client = s3Client;
+            _context = context;
+
         }
 
 
-        [HttpPost]
-        public async Task<bool> CreateFile(IFormFile file, [FromHeader] int customerId)
-        {
-            /*using (var client = new TransferUtility(_s3Client))
-            {
-                var uploudRequest = new TransferUtilityUploadRequest
-                {
-                    BucketName = "test-p001",
-                    Key = "hel",
-                    InputStream = file.OpenReadStream(),
-                    ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256,
-                    ContentType = "pdf"
-
-            };
-
-                client.Upload(uploudRequest);
-
-                return true;
 
 
-            }*/
-
-            PutObjectRequest request = new PutObjectRequest();
-            request.BucketName = "construction001";
-            request.InputStream = file.OpenReadStream();
-            request.Key = customerId + "/orders/" + file.FileName;
-            request.ContentType = file.ContentType;
-            var response = await _s3Client.PutObjectAsync(request);
-            if (response!=null) { return true; }
-            else { return false; }
-        }
-        
 
         [HttpGet]
         public async Task<IActionResult> DownloadFile(string fileName, [FromHeader] int customerId)
@@ -78,6 +54,50 @@ namespace ConstructionApi.Controllers
 
             return file;
         }
+
+        [HttpPost("{id}")]
+        public async Task<IActionResult> PostDocument([FromForm] IFormFile file, [FromForm] string docInfo, [FromHeader] int customerId, int id) {
+            var docObj = JsonConvert.DeserializeObject<DocumentObj>(docInfo);
+            var s3ActionSucceeded = await CreateFile(file, customerId);
+
+            if (s3ActionSucceeded)
+            {
+                _context.Document.Add(new DocumentDb()
+                {
+                    FileName = docObj.FileName,
+                    FileType = docObj.FileType,
+                    DateCreated = docObj.DateCreated,
+                    OwnerId = id,
+                    FileCategory = DocumentCategory.Order,
+                    CustomerId = customerId,
+                });
+                _context.SaveChanges();
+                return Ok("Document Created Successfully");
+            }
+            else { return BadRequest("Could not store file in s3"); }
+        }
+
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDicument(int id, [FromHeader] int customerId, [FromQuery] string fileName)
+        {
+            //differeciate the s3 errors of notfound and found but couldn't deleted
+            var bucket = "construction001";
+            var key = $"{customerId}/orders/{fileName}";
+            var res = await DeleteFile(bucket, key);
+            if (res)
+            {
+                var foundDoc = _context.Document.FirstOrDefault(i => i.Id == id && i.CustomerId == customerId);
+                _context.Document.Remove(foundDoc);
+                _context.SaveChanges();
+                return Ok("Document Deleted Successfully");
+            }
+            else
+            {
+                return BadRequest("Failed To delete from s3");
+            }
+        }
+
 
         async Task<FileStreamResult> GetFile(string name) {
             
@@ -105,14 +125,47 @@ namespace ConstructionApi.Controllers
             return formFile;
 
         }
-        [HttpDelete("delete/{id}")]
-        public async Task<bool> DeleteFile(string bucket,string key) {
+        
+
+        async Task<bool> DeleteFile(string bucket,string key) {
             var response = await _s3Client.DeleteObjectAsync(bucket,key);
             if (response != null) { return true; }
             else { return false; }
         }
 
-        [HttpPost("/pp")]
+
+        async Task<bool> CreateFile(IFormFile file, int customerId)
+        {
+            /*using (var client = new TransferUtility(_s3Client))
+            {
+                var uploudRequest = new TransferUtilityUploadRequest
+                {
+                    BucketName = "test-p001",
+                    Key = "hel",
+                    InputStream = file.OpenReadStream(),
+                    ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256,
+                    ContentType = "pdf"
+
+            };
+
+                client.Upload(uploudRequest);
+
+                return true;
+
+
+            }*/
+
+            PutObjectRequest request = new PutObjectRequest();
+            request.BucketName = "construction001";
+            request.InputStream = file.OpenReadStream();
+            request.Key = customerId + "/orders/" + file.FileName;
+            request.ContentType = file.ContentType;
+            var response = await _s3Client.PutObjectAsync(request);
+            if (response != null) { return true; }
+            else { return false; }
+        }
+
+        [HttpPost("/test")]
         public async Task<IActionResult> StorenS3File(IFormFile file, [FromHeader] int customerId)
         {
             PutObjectRequest request = new PutObjectRequest();
